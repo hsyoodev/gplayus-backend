@@ -1,0 +1,15 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/java:1-17-bullseye",
+  "runArgs": ["--name=gplayus-backend"],
+  "remoteUser": "root",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vmware.vscode-boot-dev-pack",
+        "esbenp.prettier-vscode",
+        "vscjava.vscode-gradle",
+        "mhutchie.git-graph"
+      ]
+    }
+  }
+}
