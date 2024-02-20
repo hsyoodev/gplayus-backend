@@ -1,14 +1,22 @@
 {
   "image": "mcr.microsoft.com/devcontainers/java:1-17-bullseye",
-  "runArgs": ["--name=gplayus-backend"],
+  "runArgs": ["--name=gplayus-backend", "-p", "8080:8080"],
   "remoteUser": "root",
   "customizations": {
     "vscode": {
+      "settings": {
+        "java.format.settings.url": "https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml",
+        "java.compile.nullAnalysis.mode": "automatic",
+        "java.configuration.updateBuildConfiguration": "automatic",
+        "editor.formatOnSave": true
+      },
       "extensions": [
         "vmware.vscode-boot-dev-pack",
         "esbenp.prettier-vscode",
         "vscjava.vscode-gradle",
-        "mhutchie.git-graph"
+        "mhutchie.git-graph",
+        "vscjava.vscode-lombok",
+        "ms-azuretools.vscode-docker"
       ]
     }
   }
