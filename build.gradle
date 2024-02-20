@@ -32,3 +32,11 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+task copySubmodule(type: Copy) {
+	copy {
+		from "gplayus-backend-submodule"
+		include "*.yaml"
+		into "src/main/resources"
+	}
+}
