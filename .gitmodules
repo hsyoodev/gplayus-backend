@@ -1,0 +1,3 @@
+[submodule "gplayus-backend-submodule"]
+	path = gplayus-backend-submodule
+	url = https://github.com/hsyoodev/gplayus-backend-submodule.git
