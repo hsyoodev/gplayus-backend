@@ -305,6 +305,6 @@ gradle-app.setting
 src/main/resources/application*.yaml
 
 ### Docker ###
-docker-compose*.yaml
+docker-compose-prod.yaml
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,java,gradle,git,intellij+all,eclipse,visualstudiocode
