@@ -1,0 +1,33 @@
+services:
+  web:
+    container_name: nginx
+    image: hsyoodev/gplayus-dev-nginx:1.0
+    ports:
+      - 80:80
+    volumes:
+      - nginx:/etc/nginx
+    depends_on:
+      - application
+  application:
+    container_name: spring-boot
+    image: hsyoodev/gplayus-dev-spring-boot:1.0
+    ports:
+      - 35729:35729
+    expose:
+      - 8080
+    depends_on:
+      - database
+  database:
+    container_name: mysql
+    image: hsyoodev/gplayus-dev-mysql:1.0
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: gplayus
+    volumes:
+      - mysql:/var/lib/mysql
+    expose:
+      - 3306
+      - 33060
+volumes:
+  nginx:
+  mysql:

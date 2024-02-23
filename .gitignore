@@ -302,6 +302,9 @@ gradle-app.setting
 *.hprof
 
 ### Spring Boot ###
-src/main/resources/*.yaml
+src/main/resources/application*.yaml
+
+### Docker ###
+docker-compose-prod.yaml
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,java,gradle,git,intellij+all,eclipse,visualstudiocode
