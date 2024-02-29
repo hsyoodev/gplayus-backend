@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,18 +25,26 @@ public class Tester extends Base {
 
     @Setter
     @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
-    private TesterStatus testerStatus;
+    @Column(nullable = false)
+    private TesterStatus status;
+
+    @ManyToOne
+    private Member member;
+
+    @ManyToOne
+    private App app;
 
     protected Tester() {
     }
 
-    private Tester(TesterStatus testerStatus) {
-        this.testerStatus = testerStatus;
+    private Tester(Member member, App app, TesterStatus status) {
+        this.member = member;
+        this.app = app;
+        this.status = status;
     }
 
-    public static Tester of() {
-        return new Tester(TesterStatus.APPLIED);
+    public static Tester of(Member member, App app) {
+        return new Tester(member, app, TesterStatus.APPLIED);
     }
 
     @Override

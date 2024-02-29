@@ -8,7 +8,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,26 +56,34 @@ public class App extends Base {
 
     @Setter
     @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
-    private AppStatus appStatus;
+    @Column(nullable = false)
+    private AppStatus status;
+
+    @ManyToOne
+    private Member member;
+
+    @OneToMany(mappedBy = "app")
+    private List<Tester> testers = new ArrayList<>();
 
     protected App() {
     }
 
-    private App(String name, String description, String androidUrl, String webUrl,
-            LocalDateTime endedDate, String endedBy, AppStatus appStatus) {
+    private App(Member member, String name, String description, String androidUrl, String webUrl,
+            LocalDateTime endedDate, String endedBy, AppStatus status) {
         this.name = name;
         this.description = description;
         this.androidUrl = androidUrl;
         this.webUrl = webUrl;
         this.endedDate = endedDate;
         this.endedBy = endedBy;
-        this.appStatus = appStatus;
+        this.status = status;
+        this.member = member;
     }
 
-    public static App of(String name, String description, String androidUrl, String webUrl,
+    public static App of(Member member, String name, String description, String androidUrl,
+            String webUrl,
             LocalDateTime endedDate, String endedBy) {
-        return new App(name, description, androidUrl, webUrl, endedDate, endedBy,
+        return new App(member, name, description, androidUrl, webUrl, endedDate, endedBy,
                 AppStatus.IN_PROGRESS);
     }
 

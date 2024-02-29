@@ -5,6 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,6 +27,12 @@ public class Member extends Base {
     @Setter
     @Column(length = 100, nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "member")
+    private List<App> apps = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Tester> testers = new ArrayList<>();
 
     protected Member() {
     }
