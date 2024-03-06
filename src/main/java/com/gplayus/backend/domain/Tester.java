@@ -15,7 +15,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Getter
-@ToString
+@ToString(callSuper = true)
 @Entity
 public class Tester extends Base {
 

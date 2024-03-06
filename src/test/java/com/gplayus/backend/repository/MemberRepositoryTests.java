@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.gplayus.backend.config.JpaAuditingConfig;
 import com.gplayus.backend.domain.Member;
+import com.gplayus.backend.enums.MemberRole;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ class MemberRepositoryTests {
         long count = memberRepository.count();
 
         // when
-        Member member = Member.of("dev@gmail.com", "dev");
+        Member member = Member.of("dev@gmail.com", "dev", MemberRole.ROLE_USER, "dev", "dev");
         memberRepository.save(member);
 
         // then
