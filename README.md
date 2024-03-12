@@ -19,7 +19,7 @@ Demo👉 [https://www.gplayus.com/](https://www.gplayus.com/)
 
 ### Database
 
-![Static Badge](https://img.shields.io/badge/-mysql-%234479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Static Badge](https://img.shields.io/badge/-mysql%208-%234479A1?style=for-the-badge&logo=mysql&logoColor=white)
 
 ### Authentication
 
