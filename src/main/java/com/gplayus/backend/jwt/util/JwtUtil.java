@@ -1,20 +1,20 @@
-package com.gplayus.backend.jwt;
+package com.gplayus.backend.jwt.util;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+
 @Component
 public class JwtUtil {
-
     private final SecretKey secretKey;
 
-    public JwtUtil(@Value("${spring.jwt.secret}") String secretKey) {
+    public JwtUtil(@Value("${spring.jwt.secret-key}") String secretKey) {
         this.secretKey = new SecretKeySpec(
                 secretKey.getBytes(StandardCharsets.UTF_8), SIG.HS256.key().build().getAlgorithm()
         );
@@ -85,7 +85,7 @@ public class JwtUtil {
     }
 
     public String createToken(String type, Long id, String email, String name, String role,
-            Long expiredMs) {
+                              Long expiredMs) {
         return Jwts.builder()
                 .claim("type", type)
                 .claim("id", id)

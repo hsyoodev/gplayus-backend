@@ -1,11 +1,8 @@
 package com.gplayus.backend.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.gplayus.backend.config.JpaAuditingConfig;
 import com.gplayus.backend.domain.App;
 import com.gplayus.backend.domain.Member;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +10,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("App CRUD Test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -38,8 +39,7 @@ class AppRepositoryTests {
         // when
         Member member = memberRepository.findById(1L).orElseThrow();
         App app = App.of(member, "신조어 퀴즈", "신조어 퀴즈를 학습할 수 있는 앱 서비스", "https://play.google.com/",
-                "https://play.google.com/",
-                null, null);
+                "https://play.google.com/");
         appRepository.save(app);
 
         // then

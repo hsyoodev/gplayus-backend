@@ -1,29 +1,22 @@
 package com.gplayus.backend.domain;
 
 import com.gplayus.backend.enums.AppStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.validator.constraints.URL;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.validator.constraints.URL;
 
 @Getter
 @ToString(callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class App extends Base {
-
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -63,43 +56,9 @@ public class App extends Base {
     private Member member;
 
     @OneToMany(mappedBy = "app")
-    private List<Tester> testers = new ArrayList<>();
+    private List<Tester> testers;
 
-    protected App() {
-    }
-
-    private App(Member member, String name, String description, String androidUrl, String webUrl,
-            LocalDateTime endedDate, String endedBy, AppStatus status) {
-        this.name = name;
-        this.description = description;
-        this.androidUrl = androidUrl;
-        this.webUrl = webUrl;
-        this.endedDate = endedDate;
-        this.endedBy = endedBy;
-        this.status = status;
-        this.member = member;
-    }
-
-    public static App of(Member member, String name, String description, String androidUrl,
-            String webUrl,
-            LocalDateTime endedDate, String endedBy) {
-        return new App(member, name, description, androidUrl, webUrl, endedDate, endedBy,
-                AppStatus.IN_PROGRESS);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof App app)) {
-            return false;
-        }
-        return Objects.equals(id, app.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
+    public static App of(Member member, String name, String description, String androidUrl, String webUrl) {
+        return new App(null, name, description, androidUrl, webUrl, null, null, AppStatus.IN_PROGRESS, member, new ArrayList<>());
     }
 }
