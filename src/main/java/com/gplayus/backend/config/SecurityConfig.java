@@ -1,95 +1,98 @@
 package com.gplayus.backend.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gplayus.backend.enums.MaxAgeType;
-import com.gplayus.backend.exception.CustomAccessDeniedHandler;
-import com.gplayus.backend.jwt.JwtExceptionFilter;
-import com.gplayus.backend.jwt.JwtFilter;
-import com.gplayus.backend.oauth2.CustomOAuth2UserService;
-import com.gplayus.backend.oauth2.CustomOAuth2UserSuccessHandler;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.Collections;
+import com.gplayus.backend.enums.MemberRole;
+import com.gplayus.backend.filter.CustomAccessDeniedHandler;
+import com.gplayus.backend.jwt.exception.JwtExceptionFilter;
+import com.gplayus.backend.jwt.filter.JwtFilter;
+import com.gplayus.backend.jwt.util.JwtUtil;
+import com.gplayus.backend.oauth2.filter.GoogleOAuth2UserSuccessHandler;
+import com.gplayus.backend.oauth2.service.GoogleOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Collections;
 
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final CustomOAuth2UserSuccessHandler customOAuth2UserSuccessHandler;
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
-    private final JwtFilter jwtFilter;
-    private final JwtExceptionFilter jwtExceptionFilter;
+    private final GoogleOAuth2UserService googleOAuth2UserService;
+    private final GoogleOAuth2UserSuccessHandler googleOAuth2UserSuccessHandler;
+    private final JwtUtil jwtUtil;
+    private final ObjectMapper objectMapper;
 
     @Value("${spring.frontend.base-url}")
     private String FRONTEND_BASE_URL;
 
+    @Value("${spring.frontend.login-url}")
+    private String FRONTEND_LOGIN_URL;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrfConfigurer -> csrfConfigurer.disable());
+                .csrf(CsrfConfigurer::disable);
 
         http
-                .cors(corsConfiguration -> corsConfiguration.configurationSource(
-                        new CorsConfigurationSource() {
-                            @Override
-                            public CorsConfiguration getCorsConfiguration(
-                                    HttpServletRequest request) {
-                                CorsConfiguration configuration = new CorsConfiguration();
+                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource -> {
+                    CorsConfiguration configuration = new CorsConfiguration();
 
-                                configuration.setAllowedOrigins(
-                                        Collections.singletonList(FRONTEND_BASE_URL));
-                                configuration.setAllowedMethods(Collections.singletonList("*"));
-                                configuration.setAllowCredentials(true);
-                                configuration.setAllowedHeaders(Collections.singletonList("*"));
-                                configuration.setMaxAge(MaxAgeType.ONE_HOUR.getSeconds());
-                                configuration.setExposedHeaders(
-                                        Collections.singletonList(HttpHeaders.SET_COOKIE));
-                                configuration.setExposedHeaders(
-                                        Collections.singletonList(HttpHeaders.AUTHORIZATION));
+                    configuration.setAllowedOrigins(Collections.singletonList(FRONTEND_BASE_URL));
+                    configuration.setAllowedMethods(Collections.singletonList("*"));
+                    configuration.setAllowedHeaders(Collections.singletonList("*"));
+                    configuration.setAllowCredentials(true);
+                    configuration.setMaxAge(MaxAgeType.ONE_HOUR.getSeconds());
 
-                                return configuration;
-                            }
-                        }));
+                    configuration.setExposedHeaders(Collections.singletonList(HttpHeaders.AUTHORIZATION));
 
-        http.authorizeHttpRequests(
-                authorizeHttpRequestsConfigurer -> authorizeHttpRequestsConfigurer
+                    return configuration;
+                }));
+
+        http
+                .authorizeHttpRequests(authorizeHttpRequestsConfigurer -> authorizeHttpRequestsConfigurer
+                        .requestMatchers(HttpMethod.GET, "/apps").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/apps").hasRole(MemberRole.ROLE_USER.getRole())
                         .anyRequest().authenticated()
-        );
-
-        http
-                .formLogin(formLoginConfigurer -> formLoginConfigurer.disable());
-
-        http
-                .httpBasic(httpBasicConfigurer -> httpBasicConfigurer.disable());
-
-        http.
-                oauth2Login(oAuth2LoginConfigurer -> oAuth2LoginConfigurer
-                        .loginPage(FRONTEND_BASE_URL)
-                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService)
-                        )
-                        .successHandler(customOAuth2UserSuccessHandler)
                 );
 
         http
-                .addFilterAfter(jwtExceptionFilter, OAuth2LoginAuthenticationFilter.class)
-                .addFilterAfter(jwtFilter, JwtExceptionFilter.class);
+                .formLogin(FormLoginConfigurer::disable);
+
+        http
+                .httpBasic(HttpBasicConfigurer::disable);
+
+        http
+                .oauth2Login(oAuth2LoginConfigurer -> oAuth2LoginConfigurer
+                        .loginPage(FRONTEND_LOGIN_URL)
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+                                .userService(googleOAuth2UserService)
+                        )
+                        .successHandler(googleOAuth2UserSuccessHandler)
+                );
+
+
+        http
+                .addFilterAfter(new JwtExceptionFilter(objectMapper), OAuth2LoginAuthenticationFilter.class)
+                .addFilterAfter(new JwtFilter(jwtUtil), JwtExceptionFilter.class);
 
         http
                 .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer
-                        .accessDeniedHandler(customAccessDeniedHandler)
+                        .accessDeniedHandler(new CustomAccessDeniedHandler(objectMapper))
                 );
 
         http

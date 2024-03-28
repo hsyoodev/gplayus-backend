@@ -1,23 +1,24 @@
 package com.gplayus.backend.dto.response;
 
+import com.gplayus.backend.domain.Member;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberResponse {
-
     private final Long id;
     private final String email;
     private final String name;
     private final String role;
 
-    private MemberResponse(Long id, String email, String name, String role) {
-        this.id = id;
-        this.email = email;
-        this.name = name;
-        this.role = role;
-    }
-
-    public static MemberResponse of(Long id, String email, String name, String role) {
-        return new MemberResponse(id, email, name, role);
+    public static MemberResponse from(Member member) {
+        return new MemberResponse(
+                member.getId(),
+                member.getEmail(),
+                member.getName(),
+                member.getRole().name()
+        );
     }
 }
